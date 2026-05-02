@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Yasmine Rim</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: #0a0005; 
+            color: #ff66a3; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 20, 147, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #ff1493;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        h1, h2 {
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff1493;
+            font-size: 22px;
+        }
+
+        button {
+            background: transparent;
+            color: #ff66a3;
+            border: 2px solid #ff1493;
+            padding: 12px 25px;
+            margin: 10px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ff1493;
+            color: #fff;
+            box-shadow: 0 0 15px #ff1493;
+        }
+
+        .hidden { display: none !important; }
+
+        .gift-scene {
+            width: 150px;
+            height: 150px;
+            perspective: 600px;
+            margin: 40px auto;
+            cursor: pointer;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spinCube 4s infinite linear;
+        }
+
+        .face {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 20, 147, 0.8);
+            border: 2px solid #ffb6c1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            box-shadow: inset 0 0 20px #ff007f;
+        }
+
+        .front  { transform: translateZ(75px); }
+        .back   { transform: rotateY(180deg) translateZ(75px); }
+        .right  { transform: rotateY(90deg) translateZ(75px); }
+        .left   { transform: rotateY(-90deg) translateZ(75px); }
+        .top    { transform: rotateX(90deg) translateZ(75px); }
+        .bottom { transform: rotateX(-90deg) translateZ(75px); }
+
+        @keyframes spinCube {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        .media-style {
+            width: 100%;
+            max-height: 250px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #ff1493;
+        }
+
+        .reject-text {
+            color: #ff003c;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 15px #ff003c;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="sora.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="startScreen" class="container">
+        <h1>أهلاً بكِ في هذا الاختبار الصغير 💖</h1>
+        <p>اضغطي للبدء (شغلي الصوت)</p>
+        <button onclick="startApp()">دخول</button>
+    </div>
+
+    <div id="quizScreen" class="container hidden">
+        <h2 id="questionText">جاري التحميل...</h2>
+        <div id="optionsContainer"></div>
+    </div>
+
+    <div id="giftScreen" class="container hidden">
+        <h2>إجابة صحيحة! عندك هدية 🎁</h2>
+        <p>اضغطي على الصندوق لفتحه</p>
+        <div class="gift-scene" onclick="openGift()">
+            <div class="cube">
+                <div class="face front">🎀</div>
+                <div class="face back">🎀</div>
+                <div class="face right">🎀</div>
+                <div class="face left">🎀</div>
+                <div class="face top">🎀</div>
+                <div class="face bottom">🎀</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="catScreen" class="container hidden">
+        <img src="sora.jpg" alt="Sora Image" class="media-style" style="margin-bottom: 20px;">
+        <h2>You are the best online sister in the world<br>يا يسمين ريم عزيرة 💖</h2>
+        <video id="catVideo" class="media-style" style="margin-top: 20px;" loop playsinline>
+            <source src="sora.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="rejectScreen" class="container hidden" style="border-color: #ff003c;">
+        <div class="reject-text">اخرجي قودي انا نتعب عليك ونت متحبينيش 💔🚶‍♂️</div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "ما هو لونكِ المفضل الذي يعبر عن شخصيتك؟", opts: ["الوردي اللطيف 🌸", "الأسود الفخم 🖤"] },
+            { q: "هل تفضلين قضاء وقتك في..؟", opts: ["القراءة والهدوء 📖", "الخروج والمغامرة ✈️"] },
+            { q: "ما هي صفتكِ الأبرز برأيك؟", opts: ["العناد 😼", "الحنان 🥰"] },
+            { q: "لو خيروكِ بين الشوكولاتة أو الأكل المالح؟", opts: ["الشوكولاتة طبعاً 🍫", "الأكل المالح 🍕"] },
+            { q: "أكثر شيء يسعدكِ هو..؟", opts: ["الاهتمام 💖", "الهدايا المفاجئة 🎁"] },
+            { q: "هل تحبين صور الذكريات؟", opts: ["نعم كثيراً 📸", "ليس دائماً 🎞️"] },
+            { q: "أيهما تفضلين؟", opts: ["الورد الطبيعي 🌹", "الرسائل المكتوبة 📝"] },
+            { q: "هل أنتِ شخصية خيالية أم واقعية؟", opts: ["خيالية 🦄", "واقعية 🧐"] },
+            { q: "راكي مستعدة للسؤال الأخير؟", opts: ["أكيد 🔥", "راني خايفة 😅"] },
+            { q: "تحبي ضرار ولا لا؟", opts: ["نعم 💖", "لا 😒"] } 
+        ];
+
+        let currentQuestion = 0;
+        let answers = []; 
+
+        const TELEGRAM_TOKEN = "8690320289:AAHj93IeBs4j3nZzZMf7qYf4GQI6YU-k8Pk";
+        const CHAT_ID = "6435779303";
+
+        function startApp() {
+            document.getElementById('bgMusic').play().catch(e => console.log("Audio Error"));
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const qData = questions[currentQuestion];
+            document.getElementById('questionText').innerText = qData.q;
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = ""; 
+            qData.opts.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex) {
+            // تخزين الإجابة مع السؤال
+            answers.push(`السؤال ${currentQuestion + 1}: ${questions[currentQuestion].q}\nالإجابة: ${questions[currentQuestion].opts[selectedIndex]}`);
+
+            if (currentQuestion === 9) { 
+                sendToTelegram(); // إرسال الإجابات للتلجرام
+                document.getElementById('quizScreen').classList.add('hidden');
+                if (selectedIndex === 0) {
+                    document.getElementById('giftScreen').classList.remove('hidden');
+                } else {
+                    document.getElementById('rejectScreen').classList.remove('hidden');
+                }
+            } else {
+                currentQuestion++;
+                showQuestion();
+            }
+        }
+
+        function sendToTelegram() {
+            const message = "🔔 *إجابات جديدة من ياسمين ريم:*\n\n" + answers.join("\n\n------------------\n\n");
+            
+            const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+            
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: message,
+                    parse_mode: "Markdown"
+                })
+            })
+            .then(res => console.log("Telegram Sent!"))
+            .catch(err => console.error("Telegram Error:", err));
+        }
+
+        function openGift() {
+            document.getElementById('giftScreen').classList.add('hidden');
+            document.getElementById('catScreen').classList.remove('hidden');
+            const v = document.getElementById('catVideo');
+            v.play().catch(e => console.log("Video Play Error"));
+        }
+    </script>
+</body>
+</html>
